@@ -28,9 +28,6 @@ $ git clone https://github.com/joaovitor32/NLW-Ecoleta
 <h4>Server - Backend </h4>
 
 ```bash
-# Clone this repository
-$ git clone https://github.com/matheuscastroweb/tiktok-clone
-tiktok-clone
 
 # Install dependencies
 $ npm install
