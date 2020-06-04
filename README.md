@@ -41,3 +41,16 @@ $ npm run knex:seed
 $ npm run dev
 
 ```
+
+<h4>Web - Frontend </h4>
+
+```bash
+
+# Install dependencies
+$ npm install
+
+# Rodar no terminal os seguintes comandos
+
+$ npm start
+
+```
