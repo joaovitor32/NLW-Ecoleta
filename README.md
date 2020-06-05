@@ -54,3 +54,16 @@ $ npm install
 $ npm start
 
 ```
+
+<h4>Mobile </h4>
+
+```bash
+
+# Install dependencies
+$ npm install
+
+# Rodar no terminal os seguintes comandos
+
+$ expo start
+
+```
