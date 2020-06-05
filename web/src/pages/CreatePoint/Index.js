@@ -2,28 +2,30 @@ import React, { useEffect, useState } from 'react';
 
 import './styles.css';
 import logo from '../../assets/logo.svg'
-import { Link,useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi'
 import { Map, TileLayer, Marker } from 'react-leaflet'
 import api from '../../services/api';
 import axios from 'axios';
+import Dropzone from '../../components/Dropzone/Index.tsx'
 
 const CreatePoint = () => {
 
-    const history=useHistory();
+    const history = useHistory();
     const [items, setItems] = useState([]);
     const [ufs, setUFS] = useState([]);
     const [city, setCity] = useState([]);
-    const [selectedCidade,setSelectedCidade]=useState();
+    const [selectedCidade, setSelectedCidade] = useState();
     const [selectedUf, setSelectedUf] = useState('0');
-    const [selectedPosition,setSelectedPosition]=useState([0,0])
-    const [initialPosition,setInitialPosition]=useState([0,0])
-    const [selectedItems,setSelectedItems]=useState([]);
-    const [formData,setFormData]=useState({
-        name:'',
-        email:'',
-        whatsapp:'',
+    const [selectedPosition, setSelectedPosition] = useState([0, 0])
+    const [initialPosition, setInitialPosition] = useState([0, 0])
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        whatsapp: '',
     })
+    const [selectedFile, setSelectedFile] = useState();
 
     useEffect(() => {
         api.get('items').then(res => {
@@ -50,12 +52,12 @@ const CreatePoint = () => {
             });
     }, [selectedUf])
 
-    useEffect(()=>{
-        navigator.geolocation.getCurrentPosition(position=>{
-            const {latitude,longitude}=position.coords;
-            setInitialPosition([latitude,longitude]);
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords;
+            setInitialPosition([latitude, longitude]);
         })
-    },[])
+    }, [])
 
     const handleSelectedUF = (event) => {
         const uf = event.target.value;
@@ -67,40 +69,39 @@ const CreatePoint = () => {
         setSelectedCidade(cidade);
     }
 
-    const handleMapClick=(event)=>{
+    const handleMapClick = (event) => {
         setSelectedPosition([
             event.latlng.lat,
             event.latlng.lng
         ])
     }
 
-    const handleInputChange=(event)=>{
-        const {name,value}=event.target;
-        setFormData({...formData,[name]:value});
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({ ...formData, [name]: value });
     }
 
-    const handleSelectedItem=(id)=>{
-        const alreadySelected=selectedItems.findIndex(item=>item===id);
+    const handleSelectedItem = (id) => {
+        const alreadySelected = selectedItems.findIndex(item => item === id);
 
-        if(alreadySelected>=0){
-            const filteredItems=selectedItems.filter(item=>item!==id);
+        if (alreadySelected >= 0) {
+            const filteredItems = selectedItems.filter(item => item !== id);
             setSelectedItems(filteredItems);
-        }else{
-            setSelectedItems([...selectedItems,id])
+        } else {
+            setSelectedItems([...selectedItems, id])
         }
     }
 
-    const handleSubmit=async(event)=>{
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        const {name,email,whatsapp}=formData;
-        const uf=selectedUf;
-        const cidade=selectedCidade;
-        const [latitude,longitude]=selectedPosition;
-        const items=selectedItems;
 
-       
+        const { name, email, whatsapp } = formData;
+        const uf = selectedUf;
+        const cidade = selectedCidade;
+        const [latitude, longitude] = selectedPosition;
+        const items = selectedItems;
 
-        const data={
+        /*const data={
             name,
             email,
             whatsapp,
@@ -109,9 +110,21 @@ const CreatePoint = () => {
             latitude,
             longitude,
             items
-        }
-       
-       await api.post('points',data);
+        }*/
+
+        const data = new FormData()
+
+        data.append("name", name);
+        data.append("email", email);
+        data.append("whatsapp", whatsapp);
+        data.append("uf", uf);
+        data.append('city', cidade);
+        data.append("latitude", String(latitude));
+        data.append("longitude", String(longitude));
+        data.append("items", items.join(', '))
+        data.append('image',selectedFile)
+
+        await api.post('points', data);
         history.push('/')
     }
 
@@ -126,6 +139,9 @@ const CreatePoint = () => {
             </header>
             <form onSubmit={handleSubmit}>
                 <h1>Cadastro do <br /> ponto de coleta</h1>
+
+                <Dropzone onFileUploaded={setSelectedFile} />
+
                 <fieldset>
                     <legend>
                         <h2>Dados:</h2>
@@ -186,7 +202,7 @@ const CreatePoint = () => {
                         </div>
                         <div className="field">
                             <label htmlFor="city">Cidade</label>
-                            <select  onChange={handleSelectedCidade} value={selectedCidade} name="city" id="city">
+                            <select onChange={handleSelectedCidade} value={selectedCidade} name="city" id="city">
                                 <option value="0">Selecione uma cidade</option>
                                 {city.map(cidade => (
                                     <option key={cidade} value={cidade}>{cidade}</option>
@@ -202,10 +218,10 @@ const CreatePoint = () => {
                     </legend>
                     <ul className="items-grid">
                         {items.map(item => (
-                            <li key={item.id} 
-                                onClick={()=>{handleSelectedItem(item.id)}}
-                                className={selectedItems.includes(item.id)?'selected':''}
-                           >
+                            <li key={item.id}
+                                onClick={() => { handleSelectedItem(item.id) }}
+                                className={selectedItems.includes(item.id) ? 'selected' : ''}
+                            >
                                 <img src={item.imageUrl} alt={item.title} />
                                 <span>{item.title}</span>
                             </li>
