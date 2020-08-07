@@ -1,6 +1,4 @@
 <h1 align="center">
-     <img alt="GoStack" src="https://hotmart.s3.amazonaws.com/product_pictures/6bd576fb-5d9f-4c15-b59d-482ff6a26cbe/GO1.png" width="100px" />
-    <br>
     Ecoleta
 </h1>
 <hr/>
